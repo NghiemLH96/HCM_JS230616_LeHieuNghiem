@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import './app.scss'
+import { message } from 'antd'
 
 function App() {
   interface user{
@@ -20,8 +21,19 @@ function App() {
     setMaxPoint(maxPoint)
   },[users])
   
+  const [messageApi, contextHolder] = message.useMessage();
+  const error = (text:string) => {
+    messageApi.open({
+      content: text,
+    });
+  };
+
   const handleAdd = (e:React.SyntheticEvent) => {
     e.preventDefault();
+    if ((e.target as any).playerName.value == "") {
+      error("tên người chơi không được bỏ trống")
+      return
+    }
     let newPlayer:user ={
       id:Math.random()*Date.now(),
       name:(e.target as any).playerName.value,
@@ -42,7 +54,7 @@ function App() {
       setUsers(newPlayerList)
       localStorage.setItem("userList",JSON.stringify(newPlayerList as user[]));
       if (newPlayerList.length == 0) {
-        alert("Đã hết người chơi")
+        error("Đã hết người chơi")
       }
     }
   }
@@ -75,6 +87,7 @@ function App() {
 
   return (
     <div className="scoreApp_page">
+      {contextHolder}
       <div className="scoreApp_container">
         <div className='board_header'>
           <div className='board_summary'>
